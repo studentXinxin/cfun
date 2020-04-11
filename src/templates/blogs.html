@@ -1,0 +1,92 @@
+{% extends '__base__.html' %}
+
+{% block title %}日志{% endblock %}
+
+{% block beforehead %}
+
+<script>
+var vmVue;
+function initVM(data) {
+    vmVue = new Vue({
+        el: '#vm',
+        data: {
+            blogs: data.blogs
+        },
+        methods: {
+        }
+    });
+    $('#vm').show();
+    createPage(data.page.itemsOnPage, data.page.displayedPages, data.page.items);
+}
+
+//创建分页，pageSize-每页显示数据条数，buttons-显示多少个页码按钮，total-总条数
+function createPage(pageSize, buttons, total) {
+    $(".pagination").jBootstrapPage({
+        pageSize : pageSize,
+        total : total,
+        maxPageButton:buttons,
+        onPageClicked: function(obj, pageIndex) {
+            search(pageIndex);
+        }
+    });
+}
+
+function search(pageIndex) {
+    getJSON('/api/blogs', {
+        page: pageIndex
+    }, function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        vmVue.blogs = results.blogs;
+    });
+}
+
+$(function() {
+    getJSON('/api/blogs', {
+        page: {{ page_index }}
+    }, function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        $('#loading').hide();
+        initVM(results);
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="uk-width-medium-3-4" id="vm">
+        <a href="/blogs/create" class="uk-button uk-button-primary"><i class="uk-icon-plus"></i> 添加日志</a>
+        <hr class="uk-article-divider">
+        <div v-repeat="blog: blogs">
+            <article class="uk-article">
+                <h2><a v-attr="href:'/blog/'+blog.id" v-text="blog.name"></a></h2>
+                <p class="uk-article-meta" v-text="'发表于'+blog.created_at.toDateTime()"></p>
+                <p v-text="blog.summary"></p>
+                <p><a v-attr="href:'/blog/'+blog.id">继续阅读 <i class="uk-icon-angle-double-right"></i></a></p>
+            </article>
+            <hr class="uk-article-divider">
+        </div>
+
+        <ul class="pagination jys-pagination" id="pageUL"></ul>
+    </div>
+
+
+
+    <div class="uk-width-medium-1-4">
+        <div class="uk-panel uk-panel-header">
+            <h3 class="uk-panel-title">友情链接</h3>
+            <ul class="uk-list uk-list-line">
+                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/category/0013738748415562fee26e070fa4664ad926c8e30146c67000">编程</a></li>
+                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/category/0013738748248885ddf38d8cd1b4803aa74bcda32f853fd000">读书</a></li>
+                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000">Python教程</a></li>
+                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Git教程</a></li>
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}
