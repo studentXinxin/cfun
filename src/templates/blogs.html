@@ -1,6 +1,6 @@
 {% extends '__base__.html' %}
 
-{% block title %}日志{% endblock %}
+{% block title %}博客{% endblock %}
 
 {% block beforehead %}
 
@@ -37,6 +37,9 @@ function search(pageIndex) {
     }, function (err, results) {
         if (err) {
             return fatal(err);
+        } else if (results.code){
+            toastr.error(results.message);
+            return;
         }
         vmVue.blogs = results.blogs;
     });
@@ -59,33 +62,36 @@ $(function() {
 
 {% block content %}
 
-    <div class="uk-width-medium-3-4" id="vm">
-        <a href="/blogs/create" class="uk-button uk-button-primary"><i class="uk-icon-plus"></i> 添加日志</a>
-        <hr class="uk-article-divider">
-        <div v-repeat="blog: blogs">
-            <article class="uk-article">
-                <h2><a v-attr="href:'/blog/'+blog.id" v-text="blog.name"></a></h2>
-                <p class="uk-article-meta" v-text="'发表于'+blog.created_at.toDateTime()"></p>
-                <p v-text="blog.summary"></p>
-                <p><a v-attr="href:'/blog/'+blog.id">继续阅读 <i class="uk-icon-angle-double-right"></i></a></p>
+    <div class="col-md-9 well" id="vm">
+        <div v-repeat="blog: blogs" class="blog-post blog-list">
+            <article>
+                <h2 class="blog-post-title"><a v-attr="href:'/blog/'+blog.id" v-text="blog.name"></a></h2>
+                <p class="blog-post-meta"><span class="glyphicon glyphicon-time"></span>  <span class="blog-datetime" v-text="blog.created_at.toDateTime()"></span></p>
+                <summary class="blog-summary" v-text="blog.summary"></summary>
+                <p><a class="btn btn-default readmore-btn" v-attr="href:'/blog/'+blog.id">详细阅读 <span class="glyphicon glyphicon-triangle-right"></span></a></p>
             </article>
-            <hr class="uk-article-divider">
+            <hr>
         </div>
 
-        <ul class="pagination jys-pagination" id="pageUL"></ul>
+        <ul class="pagination" id="pageUL"></ul>
     </div>
 
-
-
-    <div class="uk-width-medium-1-4">
-        <div class="uk-panel uk-panel-header">
-            <h3 class="uk-panel-title">友情链接</h3>
-            <ul class="uk-list uk-list-line">
-                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/category/0013738748415562fee26e070fa4664ad926c8e30146c67000">编程</a></li>
-                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/category/0013738748248885ddf38d8cd1b4803aa74bcda32f853fd000">读书</a></li>
-                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000">Python教程</a></li>
-                <li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Git教程</a></li>
-            </ul>
+    <div class="col-md-3">
+        <div class="panel panel-default cfun-fixed">
+            <div class="panel-heading">
+                <h3>My Profile</h3>
+                <img class="img-responsive center-block" src="/static/img/chouchou.jfif" />
+            </div>
+            <div class="panel-body sidebar-module-inset">
+                <div><h4>Yan Xinxin</h4></div>
+                <p>
+                    <span class="glyphicon glyphicon-education"></span> 华中科技大学 · 生物医学工程
+                    <br>
+                    <span class="glyphicon glyphicon-envelope"></span> yanxinxin93@qq.com
+                    <br>
+                    <span class="glyphicon glyphicon-map-marker"></span> 西安 Xi'An
+                </p>
+            </div>
         </div>
     </div>
 

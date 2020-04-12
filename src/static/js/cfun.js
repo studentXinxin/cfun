@@ -320,7 +320,7 @@ function _httpJSON(method, url, data, callback) {
         }
         return callback(null, r);
     }).fail(function (jqXHR, textStatus) {
-        return callback({'error': 'http_bad_response', 'data': '' + jqXHR.status, 'message': '网络好像出问题了 (HTTP ' + jqXHR.status + ')'});
+        return callback({'error': 'http_bad_response', 'data': '' + jqXHR.status, 'message': ''+jqXHR.statusText});
     });
 }
 
@@ -420,7 +420,15 @@ function _bindSubmit($form) {
     $form.find('button[type=submit]').removeAttr('disabled');
 }
 
+var onResize = function() {
+    $("body").css("padding-top", $(".navbar-fixed-top").height());
+    $("body").css("padding-bottom", $(".navbar-fixed-bottom").height());
+};
+
+$(window).resize(onResize());
+
 $(function () {
+    onResize();
     $('form').each(function () {
         var $form = $(this);
         if ($form.attr('action-url')) {

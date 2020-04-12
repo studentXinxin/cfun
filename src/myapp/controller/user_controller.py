@@ -6,7 +6,7 @@
 __author__ = 'Yan Xinxin'
 
 import logging,hashlib,time,json,re
-from flask import Blueprint, render_template, make_response,request,jsonify
+from flask import Blueprint, render_template,redirect, make_response,request,jsonify
 from myapp.models.models import User,next_id,AlchemyEncoder
 from myapp.framework_base.apis import Page,APIValueError,APIError
 from myapp.framework_base.orm import SessionFactory
@@ -73,24 +73,38 @@ def signin():
 @user_blue.route('/api/authenticate', methods=['POST'])
 def authenticate():
     data = toDict(json.loads(request.get_data(as_text=True)))
-
-    if not data.email:
-        raise APIValueError('email', 'Invalid email.')
-    if not data.passwd:
-        raise APIValueError('passwd', 'Invalid password.')
+    try:
+        if not data.email:
+            raise APIValueError('email', 'Invalid email.')
+        if not data.passwd:
+            raise APIValueError('passwd', 'Invalid password.')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     session = SessionFactory()
     users = session.query(User).filter(User.email==data.email).all()
     session.close()
-    if len(users) == 0:
-        raise APIValueError('email', 'Email not exist.')
+    try:
+        if len(users) == 0:
+            raise APIValueError('email', 'Email not exist.')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     user = users[0]
     # check passwd:
     sha1 = hashlib.sha1()
     sha1.update(user.id.encode('utf-8'))
     sha1.update(b':')
     sha1.update(data.passwd.encode('utf-8'))
-    if user.passwd != sha1.hexdigest():
-        raise APIValueError('passwd', 'Invalid password.')
+    try:
+        if user.passwd != sha1.hexdigest():
+            raise APIValueError('passwd', 'Invalid password.')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     # authenticate ok, set cookie:
     cookie = user2cookie(user, 86400)
     user.passwd = '******'
@@ -134,17 +148,26 @@ _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
 @user_blue.route('/api/users', methods=['POST'])
 def api_register_user():
     data = toDict(json.loads(request.get_data(as_text=True)))
-
-    if not data.name or not data.name.strip():
-        raise APIValueError('name')
-    if not data.email or not _RE_EMAIL.match(data.email):
-        raise APIValueError('email')
-    if not data.passwd or not _RE_SHA1.match(data.passwd):
-        raise APIValueError('passwd')
+    try:
+        if not data.name or not data.name.strip():
+            raise APIValueError('name')
+        if not data.email or not _RE_EMAIL.match(data.email):
+            raise APIValueError('email')
+        if not data.passwd or not _RE_SHA1.match(data.passwd):
+            raise APIValueError('passwd')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type ='application/json'
+        return r
     session = SessionFactory()
     users = session.query(User).filter(User.email==data.email).all()
-    if len(users) > 0:
-        raise APIError('register:failed', 'email', 'Email is already in use.')
+    try:
+        if len(users) > 0:
+            raise APIError('register:failed', 'email', 'Email is already in use.')
+    except APIError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     uid = next_id()
     sha1_passwd = '%s:%s' % (uid, data.passwd)
     user = User(id=uid, name=data.name.strip(), email=data.email, passwd=hashlib.sha1(sha1_passwd.encode('utf-8')).hexdigest(), image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(data.email.encode('utf-8')).hexdigest())
@@ -156,5 +179,57 @@ def api_register_user():
     user.passwd = '******'
     r = make_response(json.dumps(user, cls=AlchemyEncoder))
     r.set_cookie(COOKIE_NAME, cookie, max_age=86400, httponly=True)
+    r.content_type = 'application/json'
+    return r
+
+
+@user_blue.route('/user/change_passwd', methods=['GET'])
+def user_change_passwd():
+    return render_template("change_passwd.html", __user__=request.__user__, __email__=request.__user__.email)
+
+
+@user_blue.route('/api/change_passwd', methods=['POST'])
+def api_change_passwd():
+    user = request.__user__
+    if not user:
+        return redirect("/signin")
+
+    data = toDict(json.loads(request.get_data(as_text=True)))
+    try:
+        if not data.old_passwd or not _RE_SHA1.match(data.old_passwd):
+            raise APIValueError('old_passwd')
+        if not data.new_passwd or not _RE_SHA1.match(data.new_passwd):
+            raise APIValueError('new_passwd')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
+
+    session = SessionFactory()
+    user = session.query(User).filter(User.id==user.id).one()
+    try:
+        if not user:
+            raise APIError('change_passwd:failed', 'id', 'User does not exist in db.')
+    except APIError as e:
+        session.close()
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
+    uid = user.id
+    sha1_old_passwd = '%s:%s' % (uid, data.old_passwd)
+    crypted_old_passwd = hashlib.sha1(sha1_old_passwd.encode('utf-8')).hexdigest()
+    try:
+        if crypted_old_passwd != user.passwd:
+            raise APIError('change_passwd:failed', 'old_passwd', 'Old passwd is not correct.')
+    except APIError as e:
+        session.close()
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
+    sha1_new_passwd = '%s:%s' % (uid, data.new_passwd)
+    user.passwd = hashlib.sha1(sha1_new_passwd.encode('utf-8')).hexdigest()
+    session.commit()
+    session.close()
+    r = make_response(json.dumps(user, cls=AlchemyEncoder))
     r.content_type = 'application/json'
     return r

@@ -15,3 +15,593 @@ a:hover, a:active {
     display: none;
     margin-bottom: 15px;
 }
+
+.cfun-shadow {
+    text-shadow: 2px 2px lightgrey;
+}
+
+.body-container {
+    padding-top: 10px;
+}
+
+.well hr {
+    height: 1px;
+	background-color: #dadaea;
+	border: none;
+}
+
+@charset "UTF-8";
+/* zcr写CSS的地方 */
+body {
+	padding-top: 60px;
+	font-family: Verdana,Arial,'Microsoft YaHei',sans-serif;
+	font-size: 15px;
+}
+.navbar {
+	font-size: 17px;
+	z-index: 100;
+}
+a:hover {
+	text-decoration: none;
+}
+
+/*----------------sidebar-----------------------------------*/
+#sidebar {
+	/*display: none;*/
+	position: fixed;
+	top: 0px;
+	right: -300px;/*侧栏宽度的负值，起到隐藏的作用*/
+	bottom: 0px;
+	width: 300px;
+	background: #333;
+	padding: 26px 0px;
+	z-index: 9999;/*比下面的overlay的大*/
+}
+#sidebar ul {
+	padding: 0px;
+	list-style: none;
+}
+#sidebar ul li a {
+	color: #fff;
+	display: inline-block;
+	padding: 10px 32px;
+	width: 100%;
+}
+#sidebar ul li a:hover {
+	background: #555;
+}
+#sidebar .portrait {/*肖像*/
+	padding: 20px 65px;
+}
+#sidebar .portrait img {
+	width: 170px;
+	height: 170px;
+}
+
+/*----------overlay遮罩整个页面，在侧栏出现的时候造出一种正文内容整体变暗的效果---------*/
+#overlay {
+	display: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 9998;
+	/*z-index: 999;*//*在html中，#overlay是在sidebar之前写的，故它位于sidebar的下面，不会将sidebar
+	 *遮住，但如果设置#overlay的z-index为很大(例如999)，就会将侧栏也遮住，这不是我们想要的。
+	 *也可以对#overlay设置998，对sidebar设置999
+	 */
+	background: rgba(0,0,0,0.36);
+}
+
+#back-to-top {
+	width: 50px;
+	height: 50px;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-o-border-radius: 50%;
+	border-radius: 50%;
+	background-color: rgba(0,0,0,0.7);;
+	color: #fff;
+	z-index: 2;
+}
+#back-to-top span {
+	position: relative;
+	right: -11px;
+	bottom: 1px;
+}
+/**
+ * -----------------博客(blogList.html & blogDetails.html in common)------------------|
+ */
+
+/*---------Blog name and description-------*/
+
+.blog-header-left {
+	text-align: center;
+}
+.main-content {
+	margin-top: 3px;
+}
+.blog-header-right {
+	padding-top: 10px;
+}
+.blog-header-right img:last-child {
+	/*原来为制造出圆形头像效果，但是利用了Bootstrap中的.img-circle类达到同样的效果*/
+	width: 72px;
+	height: 72px;
+	/*-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-o-border-radius: 50%;
+	border-radius: 50%;*/
+}
+.blog-main {
+	padding-left: 34px;
+	padding-right: 34px;
+}
+.blog-post hr {
+	/*boder: 6px solid black;*/
+	height: 1px;
+	background-color: #dadaea;
+	border: none;
+}
+.blog-sidebar ul {
+	list-style: none;
+}
+.blog-sidebar .latest-article a h5 {
+	color: #078e0a;
+}
+.blog-sidebar .latest-article a p {
+	font-size: 1px;
+	color: #999;
+}
+code {
+	font-family: Menlo, Monaco, Consolas, 'Microsoft YaHei', "Courier New", monospace, Arial, Verdana, sans-serif;
+}
+.blog-detail-main .blog-post pre {
+	overflow-x: auto;
+}
+.blog-detail-main .blog-post pre code {
+	white-space: pre;
+}
+/*.blog-tags li:first-child {
+	background: #eee;
+}*/
+/*.blog-tags a {
+	background: #f5f5f5;
+}
+.blog-tags a:hover {
+	background: #fff;
+}*/
+.blog-tags span.icon {
+	color: #b1ac0d;
+}
+.follow-me {
+	margin-top: 20px;
+	padding-bottom: 8px;
+}
+.follow-me h4 {
+	margin-top: 1px;
+}
+.friend-links {
+	line-height: 1.5;
+	padding-bottom: 8px;
+}
+.friend-links h4 {
+	margin-top: 1px;
+}
+.search-box-father {
+	text-align: center;
+}
+#search-box {
+	max-width: 300px;
+	display: inline-block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.blog-post-meta .blog-datetime {
+	font-family: Georgia, 'Microsoft YaHei', Arial, Verdana, sans-serif;
+	font-size: 16px;
+}
+#showdown_summary pre {
+	background-color: #eee!important;
+}
+#showdown_content pre {
+	background-color: #eee!important;
+}
+div#showdown_content {
+	line-height: 1.6;	/*控制博客正文的行间距*/
+}
+/**
+ * --------------------------博客总览页(blogList.html)-----------------------------|
+ */
+.readmore-btn {
+	margin-top: 20px;
+}
+.bigLogo {
+	padding-top: 10px;
+}
+.blog-post-title a:hover {
+	text-decoration: underline;
+}
+
+.blog-list summary pre code {
+	white-space: pre;
+}
+/**
+ * 如何使一个div水平居中？
+ * 方法：在欲使其居中的目标div外部套一个div，假设目标div标记为aim(用id或class都可以，下同)，
+ * 外部的div标记为aim-father，如下：
+ * <div class="aim-father">
+		<div id="aim">
+		</div>
+	</div>
+ * 对aim-father设置text-align: center;的CSS样式，对aim设置如下样式：
+ * margin-left: auto;
+ * margin-right: auto;
+ * 这样就可以使得aim水平居中。下面就是一个实例。
+ * reference：http://www.cnblogs.com/DebugLZQ/archive/2011/08/09/2132381.html
+ */
+
+/*解决底部分页标签居中问题*/
+.zcrPage-father {
+	text-align: center;
+}
+.zcrPage-father #zcrPage {
+	margin-left: auto;
+	margin-right: auto;
+}
+.blog-main .blog-summary {
+	font-size: 15px;
+	line-height: 1.56;
+}
+
+.zcrQuery {
+	margin-top: 10px;
+	font-size: 16px;
+}
+.zcrSearch {
+	margin-top: 10px;
+	font-size: 16px;
+}
+.blog-summary pre {
+	background-color: #eee;
+}
+/**
+ * ----------------------------博客详细页(blogDetails.html)---------------------------|
+ */
+.blog-detail-main {
+	/*background: #fff;*/
+	padding-left: 34px;
+	padding-right: 34px;
+}
+.blog-title {
+	margin-top: 15px;
+	margin-bottom: 0;
+	font-size: 43px;
+	font-weight: normal;
+	/*font-family: monospace,sans-serif,Arial;*/
+}
+h2.blog-post-title {
+	font-family: sans-serif, Arial, 'Microsoft YaHei';
+}
+.blog-description {
+	font-size: 16px;
+	color: #999;
+	line-height: 25px;
+}
+
+.sidebar-module-inset {
+	padding: 15px;
+	background-color: #f5f5f5;
+	border-radius: 4px;
+	line-height: 1.8;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	background-color: #eee;
+}
+/*
+ * Blog posts
+ */
+
+.blog-post-meta {
+	margin-bottom: 20px;
+	color: #999;
+}
+.blog-detail-main .blog-summary {
+	line-height: 1.6;
+	font-size: 16px;
+}
+.blog-detail-main #target {
+	line-height: 1.5;
+	font-size: 16px;
+}
+/*
+ * Footer
+ */
+
+.blog-footer {
+	margin-top: 24px;
+	padding: 40px 0 30px 0;
+	color: #999;
+	text-align: center;
+	background-color: #2a2730;/*#f9f9f9*/
+	border-top: 1px solid #e5e5e5;
+	margin-bottom: -30px;
+	/*position: absolute;
+	bottom: 0;*/
+}
+.blog-footer p:last-child {
+	margin-bottom: 0;
+}
+#pre-next {
+	margin-top: 40px;
+}
+/*修改bootstrap的tooltip的默认样式*/
+.tooltip {
+	font-family: 'Microsoft YaHei', Arial, Verdana, sans-serif;
+	font-size: 15px;
+	z-index: 90;
+}
+.tooltip-inner {
+	max-width: 260px;
+	padding: 8px 11px 8px 12px;
+}
+/**
+ * --------------------------管理员登录页(zcrLogin.html)-----------------------------|
+ */
+.form-signin {
+	max-width: 330px;
+	padding: 15px;
+	margin: 15px auto;
+}
+.form-signin,
+.form-signin .checkbox {
+	margin-bottom: 10px;
+}
+.form-signin-heading {
+	margin-bottom: 16px;
+}
+.form-signin .checkbox {
+	font-weight: normal;
+}
+.form-signin .form-control {
+	position: relative;
+	height: auto;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+	margin-top: 10px;
+	font-size: 16px;
+}
+.form-signin .form-control:focus {
+	z-index: 2;
+}
+.form-signin input[type="email"] {
+	margin-bottom: -1px;
+}
+.form-signin input[type="password"] {
+	margin-bottom: 10px;
+}
+.form-signin button,
+.form-signin #go-back {
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+	margin-top: 10px;
+}
+/*.form-signin span#topCircle {
+	color: green;
+}
+*/
+#login-promot {
+	margin-top: 16px;
+}
+
+/**
+ * --------------------------关于页(aboutme.html)-----------------------------|
+ */
+.jumbotron {
+	margin-top: -5px;
+	/*background: url(../img/iceland-square.gif) no-repeat #eee;
+	background-position: center right;*/
+	background-color: #2e88d4;/*#0d62ab*/
+	background-image: url(../img/aboutme-banner.png);
+	background-repeat: repeat-x;
+	background-position: center bottom;
+	color: #fff;
+	margin-bottom: -18px;
+}
+.jumbotron {
+	margin-top: -12px;
+}
+.jumbotron .container div:first-child p {
+	font-size: 17px;
+}
+.jumbotron .container div:first-child p span:first-child {
+	color: red;
+}
+.jumbotron .container div:first-child p span:last-child {
+	color: blue;
+}
+.jumbotron .container div:first-child {
+	text-align: center;
+}
+.jumbotron .container div:first-child img {
+	width: 160px;
+	height: 160px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.aboutme-main {
+	margin-top: 50px;
+}
+/* Center align the text within the three columns below the carousel */
+.aboutme-main .introduce .col-md-4 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.aboutme-main .introduce .col-md-4 p {
+	font-size: 16px;
+	line-height: 1.5;
+}
+.aboutme-main h2 {
+  font-weight: normal;
+}
+.aboutme-main .col-md-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.aboutme-main .technology .technology-head {
+	font-size: 20px;
+	text-align: center;
+	/*background-color: red;*/
+	/*padding-top: 10px;*/
+	padding-bottom: 35px;
+}
+/*zcr 发表的论文的展示*/
+.aboutme-main .publications .publications-head {
+	font-size: 20px;
+	text-align: center;
+	/*background-color: red;*/
+	/*padding-top: 10px;*/
+	padding-bottom: 35px;
+	margin-bottom: -20px;
+}
+
+/* Featurettes
+------------------------- */
+
+.featurette-divider {
+  margin: 40px 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the aboutme-main headings */
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+  font-family: 'YouYuan','Microsoft YaHei',Arial,verdana,sans-serif;
+}
+.featurette .lead {
+	font-size: 18px;
+	line-height: 1.6;
+	margin-top: -10px;
+}
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+/*@media (min-width: 768px) {
+  .featurette-heading {
+    font-size: 50px;
+  }
+}*/
+
+@media (min-width: 992px) {
+  .featurette-heading {
+    margin-top: 40px;
+  }
+}
+
+/**
+ * --------------------------存档页(archives.html)-----------------------------|
+ */
+.main-archive {
+	text-align: center;
+	font-size: 18px;
+
+}
+.main-archive .archive-time {
+	text-align: left;
+	font-family: Consolas, monospace, Georgia;
+}
+.main-archive hr {
+	margin-top: 3px;
+	margin-bottom: 12px;
+}
+
+/**
+ * --------------------------博客编辑页(blogEdit.html)-----------------------------|
+ */
+#blog-edit-container .main-content {
+	padding: 40px 38px 60px 26px;
+}
+#blog-edit-container .main-content .col-md-2 {
+	text-align: right;
+	margin-top: 7px;
+	font-size: 16px;
+	font-family: Georgia,'Microsoft YaHei';
+}
+#blog-edit-container .main-content #blog-title,
+#blog-edit-container .main-content #blog-date {
+	max-width: 350px;
+}
+#blog-edit-container .main-content #blog-author {
+	max-width: 220px;
+}
+#fire {
+	margin-top: 40px;
+	text-align: right;
+}
+
+
+/*博客详细页的修改、删除按钮*/
+/*.btn-zcr {
+	background: red;
+	border: 4px;
+}*/
+
+h2.cursor-animation {
+	color: #FFD700;
+	font-family: Consolas, monospace;
+	width: 36ch;
+    border-right: solid 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: cursor 1s infinite step-end, text 4s steps(35);
+}
+@keyframes cursor {
+	50% { border-color: transparent; }
+}
+@keyframes text {
+	from { width: 0; }
+}
+@-webkit-keyframes cursor {
+	50% { border-color: transparent; }
+}
+@-webkit-keyframes text {
+	from { width: 0; }
+}
+.cfun-fixed {
+	position: fixed;
+	top: 61px;
+	width: 300px;
+}
+
+/*aboutme页面的"recent publications"*/
+.publications .row h3 {
+	font-family: Georgia, Arial, Verdana;
+	line-height: 30px;
+}
+
+.publications .row .conference {
+	font-family: Verdana, Arial, sans-serif;
+	color: #888;
+}
+
+.publications .row .author {
+	font-family: Verdana, Arial, sans-serif;
+	color: #666;
+}

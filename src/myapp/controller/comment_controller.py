@@ -60,13 +60,24 @@ def api_comments(*, page='1'):
 @comment_blue.route('/api/blogs/<id>/comments', methods=['POST'])
 def api_create_comment(id):
     data = toDict(json.loads(request.get_data(as_text=True)))
-    if not data.content or not data.content.strip():
-        raise APIValueError('content')
+    try:
+        if not data.content or not data.content.strip():
+            raise APIValueError('content', 'Content is empty.')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     user = request.__user__
     session = SessionFactory()
     blog = session.query(Blog).filter(Blog.id==id).one()
-    if blog is None:
-        raise APIResourceNotFoundError('Blog')
+    try:
+        if blog is None:
+            raise APIResourceNotFoundError('Blog', 'Blog not found.')
+    except APIResourceNotFoundError as e:
+        session.close()
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type = 'application/json'
+        return r
     comment = Comment(blog_id=blog.id, user_id=user.id, user_name=user.name, user_image=user.image, content=data.content.strip())
     session.add(comment)
     session.commit()

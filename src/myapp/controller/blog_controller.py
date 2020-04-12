@@ -99,14 +99,18 @@ def api_get_blog(*, id):
 
 @blog_blue.route('/api/blogs', methods=['POST'])
 def api_create_blog():
-    check_admin(request)
     data = toDict(json.loads(request.get_data(as_text=True)))
-    if not data.name or not data.name.strip():
-        raise APIValueError('name', 'name cannot be empty.')
-    if not data.summary or not data.summary.strip():
-        raise APIValueError('summary', 'summary cannot be empty.')
-    if not data.content or not data.content.strip():
-        raise APIValueError('content', 'content cannot be empty.')
+    try:
+        if not data.name or not data.name.strip():
+            raise APIValueError('name', 'name cannot be empty.')
+        if not data.summary or not data.summary.strip():
+            raise APIValueError('summary', 'summary cannot be empty.')
+        if not data.content or not data.content.strip():
+            raise APIValueError('content', 'content cannot be empty.')
+    except APIValueError as e:
+        r = make_response({'code':-1, 'message': e.message})
+        r.content_type ='application/json'
+        return r
     blog = Blog(user_id=request.__user__.id, user_name=request.__user__.name, user_image=request.__user__.image, name=data.name.strip(), summary=data.summary.strip(), content=data.content.strip())
     session = SessionFactory()
     session.add(blog)

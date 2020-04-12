@@ -1,6 +1,6 @@
 {% extends '__base__.html' %}
 
-{% block title %}编辑日志{% endblock %}
+{% block title %}编辑博客{% endblock %}
 
 {% block beforehead %}
 
@@ -9,7 +9,12 @@
 var
     ID = '{{ id }}',
     action = '{{ action }}';
-
+toastr.options = {
+    positionClass: 'toast-top-center',
+    closeMethod: 'fadeOut',
+    closeDuration: 300,
+    closeButton: true
+};
 function initVM(blog) {
     var vm = new Vue({
         el: '#vm',
@@ -18,9 +23,25 @@ function initVM(blog) {
             submit: function (event) {
                 event.preventDefault();
                 var $form = $('#vm').find('form');
+                if (!this.name.trim()) {
+                    toastr.warning("请输入标题！");
+                    return;
+                }
+                if (!this.summary.trim()) {
+                    toastr.warning("请输入摘要！");
+                    return;
+                }
+                if (!this.content.trim()) {
+                    toastr.warning("请输入内容！");
+                    return;
+                }
                 $form.postJSON(action, this.$data, function (err, r) {
                     if (err) {
-                        $form.showFormError(err);
+                        toastr.error(err.message);
+                        return;
+                    } else if (r.code){
+                        toastr.error(r.message);
+                        return;
                     }
                     else {
                         return location.assign('/');
@@ -36,7 +57,7 @@ $(function () {
     if (ID) {
         getJSON('/api/blogs/' + ID, function (err, blog) {
             if (err) {
-                return fatal(err);
+                toastr.error(err.message);
             }
             $('#loading').hide();
             initVM(blog);
@@ -57,38 +78,32 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-
-    <div id="error" class="uk-width-1-1">
-    </div>
-
-    <div id="loading" class="uk-width-1-1 uk-text-center">
-        <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
-    </div>
-
-    <div id="vm" class="uk-width-2-3">
-        <form v-on="submit: submit" class="uk-form uk-form-stacked">
-            <div class="uk-alert uk-alert-danger uk-hidden"></div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">标题:</label>
-                <div class="uk-form-controls">
-                    <input v-model="name" name="name" type="text" placeholder="标题" class="uk-width-1-1">
+    <div id="vm" class="col-md-10">
+        <form v-on="submit: submit" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-lg-1 control-label">标题:</label>
+                <div class="col-lg-11">
+                    <input v-model="name" name="name" type="text" placeholder="标题" class="form-control">
                 </div>
             </div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">摘要:</label>
-                <div class="uk-form-controls">
-                    <textarea v-model="summary" rows="4" name="summary" placeholder="摘要" class="uk-width-1-1" style="resize:none;"></textarea>
+            <div class="form-group">
+                <label class="col-md-1 control-label">摘要:</label>
+                <div class="col-md-11">
+                    <textarea v-model="summary" rows="4" name="summary" placeholder="摘要" class="form-control" style="resize:none;"></textarea>
                 </div>
             </div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">内容:</label>
-                <div class="uk-form-controls">
-                    <textarea v-model="content" rows="16" name="content" placeholder="内容" class="uk-width-1-1" style="resize:none;"></textarea>
+            <div class="form-group">
+                <label class="col-md-1 control-label">内容:</label>
+                <div class="col-md-11">
+                    <textarea v-model="content" rows="16" name="content" placeholder="内容" class="form-control" style="resize:none;"></textarea>
                 </div>
             </div>
-            <div class="uk-form-row">
-                <button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-save"></i> 保存</button>
-                <a href="/" class="uk-button"><i class="uk-icon-times"></i> 取消</a>
+            <div class="form-group">
+                <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> 保存</button>
+                    <a href="/" class="btn btn-default"><span class="glyphicon glyphicon-remove-sign"></span> 取消</a>
+                </div>
             </div>
         </form>
     </div>
