@@ -6,6 +6,7 @@
 
 <script>
 var vmVue;
+var keyword = '';
 function initVM(data) {
     vmVue = new Vue({
         el: '#vm',
@@ -32,8 +33,10 @@ function createPage(pageSize, buttons, total) {
 }
 
 function search(pageIndex) {
+    var keyword = $("#search_box").val().trim();
     getJSON('/api/blogs', {
-        page: pageIndex
+        page: pageIndex,
+        keyword: keyword
     }, function (err, results) {
         if (err) {
             return fatal(err);
@@ -42,7 +45,11 @@ function search(pageIndex) {
             return;
         }
         vmVue.blogs = results.blogs;
+        if (pageIndex == 1) {
+            createPage(results.page.itemsOnPage, results.page.displayedPages, results.page.items);
+        }
     });
+
 }
 
 $(function() {
@@ -58,6 +65,14 @@ $(function() {
 });
 </script>
 
+{% endblock %}
+{% block search_box %}
+<form class="navbar-form navbar-right">
+    <div class="form-group">
+      <input id="search_box" type="text" class="form-control" placeholder="博客名称">
+    </div>
+    <button type="button" onclick="search(1)" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查询</button>
+</form>
 {% endblock %}
 
 {% block content %}

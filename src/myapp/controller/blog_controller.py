@@ -74,13 +74,19 @@ def manage_edit_blog():
 @blog_blue.route('/api/blogs',methods=['GET'])
 def api_blogs(*, page='1'):
     page = request.args.get('page')
+    blog_name_keyword = request.args.get('keyword')
     page_index = get_page_index(page)
     session = SessionFactory()
-    num = session.query(Blog).count()
+    if blog_name_keyword:
+        filter_str = '%'+blog_name_keyword+'%'
+    else:
+        filter_str = '%%'
+    num = session.query(Blog).filter(Blog.name.like(filter_str)).count()
     p = Page(num, page_index)
     if num == 0:
+        session.close()
         return dict(page=p.__dict__, blogs=())
-    blogs = session.query(Blog).order_by(desc('created_at')).offset(p.offset).limit(p.limit).all()
+    blogs = session.query(Blog).filter(Blog.name.like(filter_str)).order_by(desc('created_at')).offset(p.offset).limit(p.limit).all()
     session.close()
     r = make_response(json.dumps(dict(page=p.__dict__, blogs=blogs),cls=AlchemyEncoder))
     r.content_type = 'application/json'
